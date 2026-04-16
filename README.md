@@ -4,17 +4,13 @@ Professional CLI for **fast image and video processing** right from the terminal
 Built with [Typer](https://typer.tiangolo.com/), [Rich](https://rich.readthedocs.io/),
 [OpenCV](https://opencv.org/), and [FFmpeg](https://ffmpeg.org/).
 
-```
-   _    ___     _          _______                   _             __
-  | |  / (_)___(_)___  ___/_  __/__  _________ ___  (_)___  ____ _/ /
-  | | / / / ___/ / __ \/ __ \/ / / _ \/ ___/ __ `__ \/ / __ \/ __ `/ /
-  | |/ / (__  ) / /_/ / / / / / /  __/ /  / / / / / / / / / / /_/ / /
-  |___/_/____/_/\____/_/ /_/_/  \___/_/  /_/ /_/ /_/_/_/ /_/\__,_/_/
-```
+<p align="center">
+  <img src="./assets/menu.svg" alt="VisionTerminal interactive menu" width="860">
+</p>
 
 ---
 
-## ✨ Commands
+## Commands
 
 | Command    | What it does                                                     |
 |------------|------------------------------------------------------------------|
@@ -30,7 +26,7 @@ back until you press `q` to quit.
 
 ---
 
-## 📦 Requirements
+## Requirements
 
 - **Python ≥ 3.10**
 - **FFmpeg** available on `PATH`
@@ -47,7 +43,7 @@ back until you press `q` to quit.
 
 ---
 
-## ⚙️ Configuration (one-time manual step)
+## Configuration (one-time manual step)
 
 The project **does not hard-code where the uv venv and cache should live** —
 that is defined in a local `config.sh` file (gitignored), so every
@@ -81,7 +77,7 @@ environment automatically. No manual `source .venv/bin/activate` needed.
 
 ---
 
-## 🚀 Activating the environment and launching the menu
+## Activating the environment and launching the menu
 
 ### First-time setup
 
@@ -178,7 +174,7 @@ vterm cut video.mp4 -s 00:10 -e 00:45
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 proj-terminalVision/
@@ -198,7 +194,7 @@ proj-terminalVision/
 
 ---
 
-## 🧪 Development
+## Development
 
 ```bash
 # with uv
@@ -216,6 +212,6 @@ caught and rendered as a red Rich panel — never as a raw traceback.
 
 ---
 
-## 📜 License
+## License
 
 MIT © Helton Maia
