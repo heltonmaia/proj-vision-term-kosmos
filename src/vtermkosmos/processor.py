@@ -1,4 +1,4 @@
-"""Media processing core for VisionTerminal.
+"""Media processing core for VisionTerm-Kosmos.
 
 This module holds all file manipulation logic (images and videos).
 The UI layer in `cli_ui.py` only consumes these functions — keeping

@@ -1,4 +1,4 @@
-"""Visual components (Rich) for VisionTerminal.
+"""Visual components (Rich) for VisionTerm-Kosmos.
 
 Keeping UI separate from logic means the `processor` is testable without
 a terminal, and `main.py` reads like a thin routing table.
@@ -35,9 +35,9 @@ ACCENT_COLOR = "magenta"
 # ---------------------------------------------------------------------------
 def render_banner() -> Panel:
     """ASCII-art banner shown in --help and in the main menu."""
-    art = pyfiglet.figlet_format("VisionTerminal", font="slant")
+    art = pyfiglet.figlet_format("Kosmos", font="slant")
     subtitle = Text(
-        "Fast image and video processing, right in your terminal.",
+        "VisionTerm · Kosmos — image & video, organized.",
         style="italic white",
     )
     body = Group(

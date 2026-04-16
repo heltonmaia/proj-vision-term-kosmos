@@ -1,4 +1,4 @@
-"""Render the VisionTerminal main menu to an SVG for documentation.
+"""Render the VisionTerm-Kosmos main menu to an SVG for documentation.
 
 Run with:
     uv run --no-project --with rich --with pyfiglet python scripts/record_menu.py
@@ -14,7 +14,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from rich.console import Console
 
-from vision_terminal import cli_ui
+from vtermkosmos import cli_ui
 
 
 def main() -> None:
@@ -30,7 +30,7 @@ def main() -> None:
 
     out = ROOT / "assets" / "menu.svg"
     out.parent.mkdir(exist_ok=True)
-    console.save_svg(str(out), title="VisionTerminal")
+    console.save_svg(str(out), title="VisionTerm-Kosmos")
     print(f"Saved: {out}")
 
 

@@ -1,11 +1,11 @@
-# VisionTerminal
+# VisionTerm-Kosmos
 
 Professional CLI for **fast image and video processing** right from the terminal.
 Built with [Typer](https://typer.tiangolo.com/), [Rich](https://rich.readthedocs.io/),
 [OpenCV](https://opencv.org/), and [FFmpeg](https://ffmpeg.org/).
 
 <p align="center">
-  <img src="./assets/menu.svg" alt="VisionTerminal interactive menu" width="860">
+  <img src="./assets/menu.svg" alt="VisionTerm-Kosmos interactive menu" width="860">
 </p>
 
 ---
@@ -61,7 +61,7 @@ Inside `config.sh` you choose:
 export VTERM_BACKEND="uv"
 
 # --- when VTERM_BACKEND="uv" ---
-export UV_PROJECT_ENVIRONMENT="/mnt/hd3/uv-common/vision-terminal"
+export UV_PROJECT_ENVIRONMENT="/mnt/hd3/uv-common/vision-term-kosmos"
 export UV_CACHE_DIR="/mnt/hd3/uv-cache"
 
 # --- when VTERM_BACKEND="venv" ---
@@ -84,7 +84,7 @@ environment automatically. No manual `source .venv/bin/activate` needed.
 **1. Create your `config.sh`** (one-time, per collaborator):
 
 ```bash
-cd proj-terminalVision
+cd proj-vision-term-kosmos
 cp config.sh.example config.sh
 # edit paths if needed: $EDITOR config.sh
 ```
@@ -177,14 +177,15 @@ vterm cut video.mp4 -s 00:10 -e 00:45
 ## Architecture
 
 ```
-proj-terminalVision/
+proj-vision-term-kosmos/
 ├── config.sh.example        # local config template (tracked in git)
 ├── config.sh                # your config (gitignored)
 ├── run.sh                   # launcher: source config + exec CLI
 ├── pyproject.toml           # dependencies and entry points
-└── src/vision_terminal/
+└── src/vtermkosmos/
     ├── main.py              # Typer app — command routing only
     ├── cli_ui.py            # Rich: banner, tables, panels, progress
+    ├── menu.py              # interactive Rich menu loop
     └── processor.py         # OpenCV + ffmpeg — all media logic
 ```
 

@@ -1,4 +1,4 @@
-"""Interactive menu loop for VisionTerminal.
+"""Interactive menu loop for VisionTerm-Kosmos.
 
 Running the CLI with no subcommand enters this loop: show the Rich menu,
 prompt for a choice, collect the arguments interactively, dispatch to
