@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# ------------------------------------------------------------------
+# VisionTerminal - environment configuration
+# ------------------------------------------------------------------
+# Copy this file to `config.sh` and adjust the paths for your machine.
+# `config.sh` is gitignored, so each collaborator keeps their own
+# machine-local configuration.
+#
+#   cp config.sh.example config.sh
+#   $EDITOR config.sh
+# ------------------------------------------------------------------
+
+# Execution backend: "uv" or "venv".
+#   - "uv"   => uses the uv package manager (fast, recommended).
+#   - "venv" => uses Python's standard venv + pip.
+export VTERM_BACKEND="uv"
+
+# ------------------------------------------------------------------
+# Settings for the "uv" backend
+# ------------------------------------------------------------------
+# Directory where uv will create/keep the managed venv.
+# Useful when you want the .venv to live outside the project directory
+# (e.g. on a different disk to save space on the system SSD).
+export UV_PROJECT_ENVIRONMENT="/mnt/hd3/uv-common/vision-terminal"
+
+# uv cache directory (downloads, compiled wheels, etc.).
+export UV_CACHE_DIR="/mnt/hd3/uv-cache"
+
+# ------------------------------------------------------------------
+# Settings for the "venv" backend
+# ------------------------------------------------------------------
+# Path to the venv used when VTERM_BACKEND="venv".
+# Default: .venv inside the project directory.
+export VTERM_VENV_PATH="./.venv"
+
+# Python interpreter used to create the venv (when it doesn't exist yet).
+export VTERM_PYTHON="python3"
