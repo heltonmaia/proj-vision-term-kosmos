@@ -46,24 +46,41 @@ def main(
 # ---------------------------------------------------------------------------
 # cut
 # ---------------------------------------------------------------------------
-@app.command("cut", help="Trim a video segment between --start and --end.")
+@app.command("cut", help="Trim a video segment — single file, or every video in a folder.")
 def cmd_cut(
-    src: Path = typer.Argument(..., exists=True, readable=True, help="Input video."),
-    start: str = typer.Option(..., "--start", "-s", help="Start time (HH:MM:SS, MM:SS, or seconds)."),
-    end: str = typer.Option(..., "--end", "-e", help="End time (HH:MM:SS, MM:SS, or seconds)."),
+    src: Path = typer.Argument(..., exists=True, readable=True, help="Input video file or folder of videos."),
+    start: Optional[str] = typer.Option(None, "--start", "-s", help="Start time (HH:MM:SS, MM:SS, or seconds). Omit to start from the beginning."),
+    end: Optional[str] = typer.Option(None, "--end", "-e", help="End time (HH:MM:SS, MM:SS, or seconds). Omit to run until the end of the video."),
     output: Optional[Path] = typer.Option(
-        None, "--output", "-o", help="Output file. Default: <name>_cut.<ext>"
+        None, "--output", "-o",
+        help="Output file (single) or folder (batch). Default: <name>_cut.<ext> / <folder>/_cut",
     ),
 ) -> None:
-    dst = output or src.with_name(f"{src.stem}_cut{src.suffix}")
     try:
-        with cli_ui.make_progress() as progress:
-            task = progress.add_task(f"Cutting {src.name}", total=1)
-            processor.cut_video(src, dst, start=start, end=end)
-            progress.advance(task)
+        if src.is_dir():
+            out_dir = output or (src / "_cut")
+            files = processor.list_media(src, kinds=("video",))
+            if not files:
+                cli_ui.error(f"No videos found in: {src}")
+                raise typer.Exit(code=1)
+            cli_ui.info(f"{len(files)} video(s) → {out_dir}")
+            with cli_ui.make_progress() as progress:
+                task = progress.add_task("Batch cut", total=len(files))
+
+                def _tick(_: Path) -> None:
+                    progress.advance(task)
+
+                processor.batch_cut(src, out_dir, start=start, end=end, progress_cb=_tick)
+            cli_ui.success(f"Batch cut complete in: [bold]{out_dir}[/]")
+        else:
+            dst = output or src.with_name(f"{src.stem}_cut{src.suffix}")
+            with cli_ui.make_progress() as progress:
+                task = progress.add_task(f"Cutting {src.name}", total=1)
+                processor.cut_video(src, dst, start=start, end=end)
+                progress.advance(task)
+            cli_ui.success(f"Trim saved to: [bold]{dst}[/]")
     except ProcessorError as err:
         _handle(err)
-    cli_ui.success(f"Trim saved to: [bold]{dst}[/]")
 
 
 # ---------------------------------------------------------------------------

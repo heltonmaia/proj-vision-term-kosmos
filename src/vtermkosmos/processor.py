@@ -92,24 +92,51 @@ def _run_ffmpeg(args: list[str]) -> None:
 # ---------------------------------------------------------------------------
 # CUT - video trimming
 # ---------------------------------------------------------------------------
-def cut_video(src: Path, dst: Path, start: str, end: str) -> Path:
+def cut_video(src: Path, dst: Path, start: str | None, end: str | None) -> Path:
     """Trim a video segment via ffmpeg (stream copy, no re-encode).
 
-    `start` and `end` accept `HH:MM:SS`, `MM:SS`, or plain seconds.
+    `start` and `end` accept `HH:MM:SS`, `MM:SS`, or plain seconds. Pass
+    `None` for either to omit the bound — `start=None` starts at 0,
+    `end=None` runs to the natural end of the file.
     """
     _ensure_exists(src)
     dst.parent.mkdir(parents=True, exist_ok=True)
-    _run_ffmpeg(
-        [
-            "-ss", start,
-            "-to", end,
-            "-i", str(src),
-            "-c", "copy",
-            "-movflags", "+faststart",
-            str(dst),
-        ]
-    )
+    args: list[str] = []
+    if start is not None:
+        args += ["-ss", start]
+    if end is not None:
+        args += ["-to", end]
+    args += ["-i", str(src), "-c", "copy", "-movflags", "+faststart", str(dst)]
+    _run_ffmpeg(args)
     return dst
+
+
+def batch_cut(
+    folder: Path,
+    out_folder: Path,
+    *,
+    start: str | None,
+    end: str | None,
+    progress_cb: Callable[[Path], None] | None = None,
+) -> list[Path]:
+    """Apply the same trim (`start` → `end`) to every video in `folder`.
+
+    `start=None` means from the beginning of each file; `end=None` means
+    until the natural end of each file.
+    """
+    files = list_media(folder, kinds=("video",))
+    if not files:
+        raise ProcessorError(f"No video files in: {folder}")
+    out_folder.mkdir(parents=True, exist_ok=True)
+
+    results: list[Path] = []
+    for src in files:
+        dst = out_folder / f"{src.stem}_cut{src.suffix}"
+        cut_video(src, dst, start=start, end=end)
+        results.append(dst)
+        if progress_cb is not None:
+            progress_cb(src)
+    return results
 
 
 # ---------------------------------------------------------------------------

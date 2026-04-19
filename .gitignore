@@ -1,6 +1,10 @@
 # Config local (caminhos específicos da máquina do usuário)
 config.sh
 
+# Claude Code
+CLAUDE.md
+.claude/
+
 # Python
 __pycache__/
 *.py[cod]
