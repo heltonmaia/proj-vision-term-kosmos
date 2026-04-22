@@ -12,20 +12,62 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
+from rich.align import Align
 from rich.console import Console
+from rich.text import Text
 
 from vtermkosmos import cli_ui
 
 
+_STYLES = {
+    "cursor": "reverse bold",
+    "virtual": f"italic magenta",
+    "dir": "bold cyan",
+    "file": "",
+}
+
+
 def main() -> None:
-    console = Console(record=True, width=100, force_terminal=True, color_system="truecolor")
-    # Point the UI module at our recording console.
-    cli_ui.console = console
-    cli_ui.render_menu()
-    # Mimic the prompt line so the screenshot shows the full UX.
+    console = Console(
+        record=True,
+        width=100,
+        force_terminal=True,
+        color_system="truecolor",
+        highlight=False,
+    )
+
+    # Banner: pyfiglet art + subtitle, centered (matches the prompt_toolkit browser).
+    console.print(Align.center(Text(cli_ui.BANNER_ART, style=f"bold {cli_ui.BRAND_COLOR}")))
+    console.print(Align.center(Text(cli_ui.BANNER_SUBTITLE, style="italic white")))
+
+    console.rule(style=cli_ui.ACCENT_COLOR)
+    console.print(Text(" /home/heltonmaia/Videos/Kooha", style=f"bold {cli_ui.BRAND_COLOR}"))
+    console.rule(style=cli_ui.ACCENT_COLOR)
+
+    entries: list[tuple[str, str]] = [
+        ("virtual", "[use this folder]"),
+        ("virtual", ".. (parent)"),
+        ("file", "2AF11_OF_low_1min_tracked.webm"),
+        ("file", "analises.mp4"),
+        ("file", "analises.webm"),
+        ("file", "bot_test.webm"),
+        ("file", "Kooha-2025-02-27-10-29-51.webm"),
+        ("cursor", "Kooha-2025-02-27-10-30-24.webm"),
+        ("file", "Kooha-2025-02-27-10-31-32.webm"),
+        ("file", "Kooha-2025-02-27-10-31-42.webm"),
+        ("file", "Kooha-2025-04-27-18-29-04.webm"),
+        ("dir", "reference/"),
+    ]
+    for kind, name in entries:
+        prefix = "▶ " if kind == "cursor" else "  "
+        console.print(Text(prefix + name, style=_STYLES[kind]))
+
+    console.rule(style=cli_ui.ACCENT_COLOR)
     console.print(
-        f"\n[bold {cli_ui.ACCENT_COLOR}]Choose an option[/] "
-        "[dim](1=cut, 2=convert, 3=wa-fix, 4=batch, 5=info, q=quit)[/]: "
+        Text(
+            " ↑/↓ move   ↵ open/select   ← parent   →/space descend   / type path   q quit",
+            style="dim",
+        )
     )
 
     out = ROOT / "assets" / "menu.svg"
