@@ -287,6 +287,57 @@ def wa_fix(src: Path, dst: Path, max_height: int = 720, video_bitrate: str = "15
 
 
 # ---------------------------------------------------------------------------
+# RESAMPLE - change FPS, optionally cropping
+# ---------------------------------------------------------------------------
+def resample_video(
+    src: Path,
+    dst: Path,
+    fps: float,
+    crop: tuple[int, int, int, int] | None = None,
+) -> Path:
+    """Re-encode `src` at `fps`, optionally cropping a `(x, y, w, h)` region.
+
+    Always writes `.mp4` (H.264, CRF 20, yuv420p, `+faststart`). The original
+    audio stream is copied without re-encoding (`-c:a copy`); if the source
+    audio is not mp4-compatible, ffmpeg's stderr is propagated verbatim via
+    `ProcessorError`.
+    """
+    _ensure_exists(src)
+    if fps <= 0:
+        raise ProcessorError("FPS must be positive.")
+    if dst.suffix.lower() != ".mp4":
+        raise ProcessorError("Resample output must be .mp4")
+
+    if crop is not None:
+        x, y, w, h = crop
+        info = probe_video(src)
+        if w <= 0 or h <= 0 or x < 0 or y < 0 or x + w > info.width or y + h > info.height:
+            raise ProcessorError(
+                f"Crop rectangle out of bounds: ({x},{y},{w},{h}) "
+                f"vs source {info.width}x{info.height}."
+            )
+        vf = f"crop={w}:{h}:{x}:{y},fps={fps}"
+    else:
+        vf = f"fps={fps}"
+
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    _run_ffmpeg(
+        [
+            "-i", str(src),
+            "-vf", vf,
+            "-c:v", "libx264",
+            "-preset", "medium",
+            "-crf", "20",
+            "-pix_fmt", "yuv420p",
+            "-movflags", "+faststart",
+            "-c:a", "copy",
+            str(dst),
+        ]
+    )
+    return dst
+
+
+# ---------------------------------------------------------------------------
 # BATCH - folder-wide operations
 # ---------------------------------------------------------------------------
 def list_media(folder: Path, kinds: Iterable[str] = ("image", "video")) -> list[Path]:
