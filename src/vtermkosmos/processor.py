@@ -80,6 +80,41 @@ def probe_video(path: Path) -> MediaInfo:
         cap.release()
 
 
+def select_crop_rect(src: Path) -> tuple[int, int, int, int]:
+    """Open an OpenCV window on the first frame; return the user's `(x, y, w, h)`.
+
+    Used by the `resample` command to pick a crop rectangle interactively.
+    Raises `ProcessorError` if the video cannot be read, the GUI is not
+    available, or the user cancels without selecting a region.
+    """
+    _ensure_exists(src)
+    cap = cv2.VideoCapture(str(src))
+    if not cap.isOpened():
+        raise ProcessorError(f"Could not open video: {src}")
+    try:
+        ok, frame = cap.read()
+    finally:
+        cap.release()
+    if not ok:
+        raise ProcessorError(f"Could not read first frame: {src}")
+
+    try:
+        x, y, w, h = cv2.selectROI(
+            "Drag a rectangle - ENTER to confirm, ESC to cancel",
+            frame,
+            showCrosshair=True,
+            fromCenter=False,
+        )
+    except cv2.error as e:
+        raise ProcessorError(f"GUI not available: {e}") from e
+    finally:
+        cv2.destroyAllWindows()
+
+    if w == 0 or h == 0:
+        raise ProcessorError("Crop cancelled - no region selected.")
+    return int(x), int(y), int(w), int(h)
+
+
 def _run_ffmpeg(args: list[str]) -> None:
     """Run ffmpeg quietly, raising ProcessorError on failure."""
     _ensure_ffmpeg()
